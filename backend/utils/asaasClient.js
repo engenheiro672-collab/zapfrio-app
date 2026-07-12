@@ -48,6 +48,19 @@ function cancelAsaasSubscription(subscriptionId) {
   return asaasRequest(`/subscriptions/${subscriptionId}`, { method: 'DELETE' });
 }
 
+// Quando você cria uma assinatura, o Asaas gera a primeira COBRANÇA (payment) dela
+// de forma meio assíncrona — o ID da assinatura não serve pra buscar o QR code do Pix,
+// precisamos do ID da cobrança. Essa função busca essa cobrança, tentando algumas vezes
+// caso ainda não tenha sido gerada no exato instante em que chamamos.
+async function findFirstPaymentOfSubscription(subscriptionId, tentativas = 5) {
+  for (let i = 0; i < tentativas; i++) {
+    const result = await asaasRequest(`/payments?subscription=${subscriptionId}`);
+    if (result.data && result.data.length > 0) return result.data[0];
+    await new Promise(r => setTimeout(r, 800)); // espera um pouquinho e tenta de novo
+  }
+  return null;
+}
+
 // Gera um Pix copia-e-cola pra uma cobrança específica (usado se o cliente escolher Pix em vez de cartão)
 function getPixQrCode(paymentId) {
   return asaasRequest(`/payments/${paymentId}/pixQrCode`);
@@ -58,5 +71,6 @@ module.exports = {
   createAsaasCustomer,
   createAsaasSubscription,
   cancelAsaasSubscription,
+  findFirstPaymentOfSubscription,
   getPixQrCode
 };

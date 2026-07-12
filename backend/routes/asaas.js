@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { requireAuth } = require('../middleware/auth');
 const supabaseAdmin = require('../config/supabaseAdmin');
-const { createAsaasCustomer, createAsaasSubscription, getPixQrCode } = require('../utils/asaasClient');
+const { createAsaasCustomer, createAsaasSubscription, findFirstPaymentOfSubscription, getPixQrCode } = require('../utils/asaasClient');
 
 function addDays(date, days) {
   const d = new Date(date);
@@ -100,8 +100,14 @@ router.post('/create-subscription', requireAuth, async (req, res) => {
 
     let pix = null;
     if (billingType === 'PIX' && subscription.id) {
-      // Busca o QR code da primeira cobrança gerada pela assinatura, pra mostrar na tela
-      try { pix = await getPixQrCode(subscription.id); } catch (e) { /* segue sem travar o fluxo */ }
+      // O ID da assinatura não serve pra pegar o QR code — precisamos achar a cobrança (payment)
+      // que o Asaas gerou automaticamente a partir dessa assinatura.
+      try {
+        const payment = await findFirstPaymentOfSubscription(subscription.id);
+        if (payment) pix = await getPixQrCode(payment.id);
+      } catch (e) {
+        console.warn('[ZapFrio] Não foi possível gerar o QR code do Pix agora:', e.message);
+      }
     }
 
     res.json({ success: true, subscriptionEndsAt: subscriptionEndsAt.toISOString(), pix });

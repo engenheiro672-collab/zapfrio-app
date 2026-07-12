@@ -141,6 +141,11 @@ body.with-trial-banner main{ margin-top:36px; }
 @media (max-width:767px){ body.with-trial-banner #sidebar{ top:0; } }
 
 @media print{ body * { visibility:hidden; } #print-area, #print-area * { visibility:visible; } #print-area { position:fixed; left:0; top:0; width:100%; height:100%; margin:0; padding-top:10mm; display:flex; flex-direction:column; align-items:center; background:white; z-index:9999; } .no-print { display:none !important; } @page { margin:0; size:auto; } }
+/* Evita o zoom automático do Safari/iOS ao tocar em campos de formulário no celular
+   (isso acontece quando o campo tem menos de 16px de fonte — então forçamos 16px só no mobile) */
+@media (max-width: 767px){
+    input, select, textarea { font-size: 16px !important; }
+}
 </style>
 </head>
 <body>
@@ -892,7 +897,10 @@ body.with-trial-banner main{ margin-top:36px; }
                     <input type="text" id="plan-card-number" placeholder="Número do cartão" class="border p-2.5 rounded-xl text-sm col-span-2">
                     <input type="text" id="plan-card-validity" placeholder="Validade (MM/AAAA)" class="border p-2.5 rounded-xl text-sm">
                     <input type="text" id="plan-card-cvv" placeholder="CVV" class="border p-2.5 rounded-xl text-sm">
+                    <input type="text" id="plan-card-cep" placeholder="CEP do titular" class="border p-2.5 rounded-xl text-sm">
+                    <input type="text" id="plan-card-num-endereco" placeholder="Número do endereço" class="border p-2.5 rounded-xl text-sm">
                 </div>
+                <p class="text-[10px] text-slate-400 mt-1">O CEP e o número do endereço precisam ser os mesmos cadastrados no banco emissor do cartão.</p>
             </div>
 
             <div id="plan-pix-fields" class="hidden text-center">
@@ -1072,9 +1080,9 @@ let selectedPlanType = null;
 
 // Janela livre pra o lead sentir a ferramenta antes do paywall aparecer.
 // Ajuste aqui: 2 horas para teste rápido do protótipo; troque para 24*60*60*1000 para "1 dia" em produção.
-// Ajuste aqui: 48 horas agora, pra facilitar os testes enquanto o sistema está sendo construído.
-// Quando for lançar de verdade pros clientes, troque de volta pra algo mais curto (ex: 2*60*60*1000 = 2 horas).
-const FREE_WINDOW_MS = 48*60*60*1000;
+// Ajuste aqui: 30 minutos agora, na fase inicial de testes/validação.
+// Depois que validar tudo, pode trocar pra um valor definitivo de produção (ex: 2*60*60*1000 = 2 horas).
+const FREE_WINDOW_MS = 30*60*1000;
 const TRIAL_DAYS = 7;
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -1390,10 +1398,12 @@ async function confirmSubscription(){
         const numero=document.getElementById('plan-card-number').value.replace(/\s/g,'');
         const validade=document.getElementById('plan-card-validity').value.trim(); // MM/AAAA
         const cvv=document.getElementById('plan-card-cvv').value.trim();
+        const cep=document.getElementById('plan-card-cep').value.replace(/\D/g,'');
+        const numEndereco=document.getElementById('plan-card-num-endereco').value.trim();
         const [mes,ano]=validade.split('/');
-        if(!numero||!mes||!ano||!cvv){showToast('Preencha os dados do cartão corretamente.','warning');return;}
+        if(!numero||!mes||!ano||!cvv||!cep||!numEndereco){showToast('Preencha todos os dados do cartão, incluindo CEP e número do endereço.','warning');return;}
         creditCard={holderName:nome,number:numero,expiryMonth:mes,expiryYear:ano,ccv:cvv};
-        creditCardHolderInfo={name:nome,email:currentCompany.email,cpfCnpj:doc,phone:currentCompany.phone};
+        creditCardHolderInfo={name:nome,email:currentCompany.email,cpfCnpj:doc,postalCode:cep,addressNumber:numEndereco,phone:currentCompany.phone,mobilePhone:currentCompany.phone};
     }
 
     const token=await getAuthToken();
@@ -2338,7 +2348,12 @@ function switchTab(id){
     if(id==='metas')renderMetas();
     if(id==='garantias')renderGarantias();
     if(id==='clientes')renderClientes();
-    if(id==='shelby'){updateShelbyPeriodLabel();const ov=document.getElementById('shelby-overlay');if(ov)ov.classList.toggle('hidden',isAppUnlocked());}
+    if(id==='shelby'){updateShelbyPeriodLabel();const ov=document.getElementById('shelby-overlay');
+        // FASE DE TESTES: a Shelby também libera durante a janela de cortesia (30 min), pra você conseguir validar.
+        // Quando terminar de validar, troca essa linha de volta pra: ov.classList.toggle('hidden', isAppUnlocked());
+        // — assim ela volta a ficar sempre travada até assinar de verdade (já que cada conversa custa API de verdade).
+        if(ov)ov.classList.toggle('hidden', isAppUnlocked() || inFreeWindow());
+    }
     if(id==='conversoes')renderConversoesGate();
     closeSidebarMobile();
 }
