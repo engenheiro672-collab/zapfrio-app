@@ -17,8 +17,8 @@
 :root{--bg:#f0f2f8;--bg2:#e8eaf4;--card:rgba(255,255,255,.9);--card-border:rgba(255,255,255,.7);--text:#1e293b;--text2:#64748b;--text3:#94a3b8;--divider:#e2e8f0;--input-bg:#fff;--table-hover:rgba(99,102,241,.04);--chart-grid:rgba(0,0,0,.04);--chart-text:#94a3b8;--grid-bg:rgba(99,102,241,.04);}
 body.dark{--bg:#060a14;--bg2:#0a0f1e;--card:rgba(13,20,40,.85);--card-border:rgba(99,102,241,.18);--text:#e2e8f0;--text2:#94a3b8;--text3:#4a5568;--divider:rgba(255,255,255,.07);--input-bg:rgba(15,23,42,.8);--table-hover:rgba(99,102,241,.08);--chart-grid:rgba(255,255,255,.05);--chart-text:#64748b;--grid-bg:rgba(99,102,241,.07);}
 
-html { overscroll-behavior: none; height:100%; }
-body { background-color: var(--bg); color: var(--text); background-image:linear-gradient(var(--grid-bg) 1px, transparent 1px),linear-gradient(90deg, var(--grid-bg) 1px, transparent 1px); background-size: 28px 28px; transition: background-color .3s, color .3s; overscroll-behavior: none; min-height:100%; touch-action: pan-x pan-y; }
+html { overscroll-behavior: none; height:100%; overflow-x:hidden; }
+body { background-color: var(--bg); color: var(--text); background-image:linear-gradient(var(--grid-bg) 1px, transparent 1px),linear-gradient(90deg, var(--grid-bg) 1px, transparent 1px); background-size: 28px 28px; transition: background-color .3s, color .3s; overscroll-behavior: none; min-height:100%; touch-action: pan-x pan-y; overflow-x:hidden; width:100%; }
 body.dark input, body.dark select, body.dark textarea { background:var(--input-bg); color:var(--text); border-color:var(--divider); }
 
 .glass { background:var(--card); backdrop-filter:blur(12px); border:1px solid var(--card-border); transition:background .3s,border .3s, transform .2s, box-shadow .2s; }
@@ -201,11 +201,11 @@ body.with-trial-banner main{ margin-top:36px; }
                 <div class="flex items-center gap-1.5 px-2 pb-3">
                     <span class="w-2.5 h-2.5 rounded-full bg-red-500/70"></span><span class="w-2.5 h-2.5 rounded-full bg-amber-400/70"></span><span class="w-2.5 h-2.5 rounded-full bg-emerald-500/70"></span>
                 </div>
-                <div class="grid grid-cols-4 gap-3">
-                    <div class="lp-card rounded-xl p-4"><p class="text-[10px] text-slate-500 font-bold uppercase mb-1">Faturamento</p><p class="text-xl font-black text-indigo-400">R$ 18.420</p></div>
-                    <div class="lp-card rounded-xl p-4"><p class="text-[10px] text-slate-500 font-bold uppercase mb-1">Lucro Líquido</p><p class="text-xl font-black text-emerald-400">R$ 11.980</p></div>
-                    <div class="lp-card rounded-xl p-4"><p class="text-[10px] text-slate-500 font-bold uppercase mb-1">OS Abertas</p><p class="text-xl font-black text-cyan-400">7</p></div>
-                    <div class="lp-card rounded-xl p-4"><p class="text-[10px] text-slate-500 font-bold uppercase mb-1">Meta do Mês</p><p class="text-xl font-black text-violet-400">76%</p></div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+                    <div class="lp-card rounded-xl p-3 sm:p-4 min-w-0"><p class="text-[9px] sm:text-[10px] text-slate-500 font-bold uppercase mb-1 truncate">Faturamento</p><p class="text-base sm:text-xl font-black text-indigo-400 truncate">R$ 18.420</p></div>
+                    <div class="lp-card rounded-xl p-3 sm:p-4 min-w-0"><p class="text-[9px] sm:text-[10px] text-slate-500 font-bold uppercase mb-1 truncate">Lucro Líquido</p><p class="text-base sm:text-xl font-black text-emerald-400 truncate">R$ 11.980</p></div>
+                    <div class="lp-card rounded-xl p-3 sm:p-4 min-w-0"><p class="text-[9px] sm:text-[10px] text-slate-500 font-bold uppercase mb-1 truncate">OS Abertas</p><p class="text-base sm:text-xl font-black text-cyan-400 truncate">7</p></div>
+                    <div class="lp-card rounded-xl p-3 sm:p-4 min-w-0"><p class="text-[9px] sm:text-[10px] text-slate-500 font-bold uppercase mb-1 truncate">Meta do Mês</p><p class="text-base sm:text-xl font-black text-violet-400 truncate">76%</p></div>
                 </div>
                 <div class="lp-card rounded-xl mt-3 p-4 h-40 flex items-end gap-2">
                     <div class="flex-1 bg-gradient-to-t from-indigo-600 to-indigo-400/40 rounded-t" style="height:45%"></div>
@@ -230,6 +230,63 @@ body.with-trial-banner main{ margin-top:36px; }
             <div class="lp-card rounded-2xl p-6 reveal"><div class="w-11 h-11 bg-cyan-500/15 rounded-xl flex items-center justify-center mb-4"><i data-lucide="users" class="w-5 h-5 text-cyan-400"></i></div><h3 class="font-bold mb-2">Histórico de clientes</h3><p class="text-sm text-slate-400">Cada cliente, cada equipamento, cada atendimento salvo — para sempre.</p></div>
             <div class="lp-card rounded-2xl p-6 reveal"><div class="w-11 h-11 bg-amber-500/15 rounded-xl flex items-center justify-center mb-4"><i data-lucide="flag" class="w-5 h-5 text-amber-400"></i></div><h3 class="font-bold mb-2">Metas mensais</h3><p class="text-sm text-slate-400">Defina sua meta e acompanhe o progresso dia a dia, sem depender de planilha.</p></div>
             <div class="lp-card rounded-2xl p-6 reveal" id="ia"><div class="w-11 h-11 bg-fuchsia-500/15 rounded-xl flex items-center justify-center mb-4"><i data-lucide="sparkles" class="w-5 h-5 text-fuchsia-400"></i></div><h3 class="font-bold mb-2">Shelby, sua assistente de IA</h3><p class="text-sm text-slate-400">Pergunte sobre seu faturamento, mande foto de um equipamento e receba ajuda na hora.</p></div>
+        </div>
+    </section>
+
+    <!-- MOSTRUÁRIO ILUSTRADO — OS e Financeiro -->
+    <section class="max-w-6xl mx-auto px-6 py-10 space-y-20">
+        <!-- OS -->
+        <div class="grid md:grid-cols-2 gap-10 items-center">
+            <div class="reveal order-2 md:order-1">
+                <span class="text-indigo-400 text-xs font-bold uppercase tracking-widest">Ordens de Serviço</span>
+                <h3 class="text-2xl md:text-3xl font-black mt-2 mb-4">Do orçamento ao recibo, em segundos</h3>
+                <p class="text-slate-400 mb-4">Cadastra o equipamento, a marca, o defeito e o cliente — e já sai imprimindo a OS ou o recibo, prontos e organizados.</p>
+                <ul class="space-y-2 text-sm text-slate-300">
+                    <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400 shrink-0"></i> Marca e modelo com os principais fabricantes já cadastrados</li>
+                    <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400 shrink-0"></i> Garantia calculada automaticamente</li>
+                    <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400 shrink-0"></i> Documento pronto pra imprimir ou mandar no WhatsApp</li>
+                </ul>
+            </div>
+            <div class="reveal order-1 md:order-2">
+                <div class="lp-mock p-4 md:p-5">
+                    <p class="text-[10px] text-slate-500 font-bold uppercase mb-3">Nova Ordem de Serviço</p>
+                    <div class="space-y-2.5">
+                        <div class="lp-card rounded-lg p-2.5 flex items-center justify-between text-xs"><span class="text-slate-500">Cliente</span><span class="font-bold text-slate-200">Maria Souza</span></div>
+                        <div class="lp-card rounded-lg p-2.5 flex items-center justify-between text-xs"><span class="text-slate-500">Equipamento</span><span class="font-bold text-slate-200">Geladeira · Brastemp</span></div>
+                        <div class="lp-card rounded-lg p-2.5 flex items-center justify-between text-xs"><span class="text-slate-500">Defeito</span><span class="font-bold text-slate-200">Não está gelando</span></div>
+                        <div class="lp-card rounded-lg p-2.5 flex items-center justify-between text-xs"><span class="text-slate-500">Garantia</span><span class="font-bold text-emerald-400">3 meses</span></div>
+                        <div class="bg-indigo-600 rounded-lg p-2.5 text-center text-xs font-bold text-white mt-3">+ Criar OS</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FINANCEIRO -->
+        <div class="grid md:grid-cols-2 gap-10 items-center">
+            <div class="reveal">
+                <div class="lp-mock p-4 md:p-5">
+                    <p class="text-[10px] text-slate-500 font-bold uppercase mb-3">Financeiro do mês</p>
+                    <div class="grid grid-cols-2 gap-2.5 mb-3">
+                        <div class="lp-card rounded-lg p-3"><p class="text-[9px] text-slate-500 font-bold uppercase mb-1">Entradas</p><p class="text-base font-black text-emerald-400">R$ 9.240</p></div>
+                        <div class="lp-card rounded-lg p-3"><p class="text-[9px] text-slate-500 font-bold uppercase mb-1">Saídas</p><p class="text-base font-black text-red-400">R$ 2.180</p></div>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="lp-card rounded-lg p-2.5 flex items-center justify-between text-xs"><span class="text-slate-400">Serviço — João Pedro</span><span class="font-bold text-emerald-400">+R$ 450</span></div>
+                        <div class="lp-card rounded-lg p-2.5 flex items-center justify-between text-xs"><span class="text-slate-400">Peças — Compressor</span><span class="font-bold text-red-400">-R$ 210</span></div>
+                        <div class="lp-card rounded-lg p-2.5 flex items-center justify-between text-xs"><span class="text-slate-400">Serviço — Ana Clara</span><span class="font-bold text-emerald-400">+R$ 280</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="reveal">
+                <span class="text-emerald-400 text-xs font-bold uppercase tracking-widest">Financeiro</span>
+                <h3 class="text-2xl md:text-3xl font-black mt-2 mb-4">Saiba exatamente quanto sobra</h3>
+                <p class="text-slate-400 mb-4">Toda entrada e saída registrada na hora — sem depender de planilha ou caderninho. No fim do mês, o saldo já está pronto.</p>
+                <ul class="space-y-2 text-sm text-slate-300">
+                    <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400 shrink-0"></i> Entradas e despesas separadas por categoria</li>
+                    <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400 shrink-0"></i> Saldo calculado automaticamente</li>
+                    <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400 shrink-0"></i> Filtro por dia, semana, mês ou período que quiser</li>
+                </ul>
+            </div>
         </div>
     </section>
 
@@ -884,7 +941,7 @@ body.with-trial-banner main{ margin-top:36px; }
             <h4 class="font-bold text-slate-800 mb-3 sm:mb-4 text-sm sm:text-base" id="plan-form-title">Ativar plano</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
                 <input type="text" id="plan-nome" placeholder="Nome completo" class="border p-2.5 rounded-xl text-sm">
-                <input type="text" id="plan-doc" placeholder="CPF ou CNPJ" class="border p-2.5 rounded-xl text-sm">
+                <input type="text" id="plan-doc" placeholder="CPF ou CNPJ" oninput="maskCpfCnpjInput(this)" maxlength="18" class="border p-2.5 rounded-xl text-sm">
             </div>
 
             <div id="plan-method-row" class="flex gap-2 mb-4">
@@ -895,9 +952,9 @@ body.with-trial-banner main{ margin-top:36px; }
             <div id="plan-card-fields">
                 <p class="text-xs font-bold text-slate-500 uppercase mb-3">Dados do cartão</p>
                 <div class="grid grid-cols-2 gap-3 mb-3">
-                    <input type="text" id="plan-card-number" placeholder="Número do cartão" class="border p-2.5 rounded-xl text-sm col-span-2">
-                    <input type="text" id="plan-card-validity" placeholder="Validade (MM/AAAA)" class="border p-2.5 rounded-xl text-sm">
-                    <input type="text" id="plan-card-cvv" placeholder="CVV" class="border p-2.5 rounded-xl text-sm">
+                    <input type="text" id="plan-card-number" placeholder="Número do cartão" oninput="maskCardNumberInput(this)" maxlength="19" inputmode="numeric" class="border p-2.5 rounded-xl text-sm col-span-2">
+                    <input type="text" id="plan-card-validity" placeholder="Validade (MM/AAAA)" oninput="maskCardValidityInput(this)" maxlength="7" inputmode="numeric" class="border p-2.5 rounded-xl text-sm">
+                    <input type="text" id="plan-card-cvv" placeholder="CVV" maxlength="4" inputmode="numeric" oninput="this.value=this.value.replace(/\D/g,'')" class="border p-2.5 rounded-xl text-sm">
                 </div>
                 <p class="text-xs font-bold text-slate-500 uppercase mb-3">Endereço do titular do cartão</p>
                 <div class="grid grid-cols-2 gap-3 mb-1">
@@ -905,7 +962,7 @@ body.with-trial-banner main{ margin-top:36px; }
                     <input type="text" id="plan-card-rua" placeholder="Rua" readonly class="border p-2.5 rounded-xl text-sm col-span-2 bg-slate-50 text-slate-600">
                     <input type="text" id="plan-card-bairro" placeholder="Bairro" readonly class="border p-2.5 rounded-xl text-sm bg-slate-50 text-slate-600">
                     <input type="text" id="plan-card-cidade" placeholder="Cidade" readonly class="border p-2.5 rounded-xl text-sm bg-slate-50 text-slate-600">
-                    <input type="text" id="plan-card-num-endereco" placeholder="Número da casa/apê" class="border p-2.5 rounded-xl text-sm col-span-2">
+                    <input type="text" id="plan-card-num-endereco" placeholder="Número da casa/apê" oninput="if(this.value.trim()){document.getElementById('cep-status').textContent='Endereço completo! Já pode confirmar.';document.getElementById('cep-status').className='text-[10px] mt-1 text-emerald-600 font-semibold';}" class="border p-2.5 rounded-xl text-sm col-span-2">
                 </div>
                 <p class="text-[10px] text-slate-400 mt-1" id="cep-status">Digite o CEP pra preencher o endereço automaticamente.</p>
             </div>
@@ -1165,6 +1222,25 @@ function maskPhoneInput(el){
     else if(d.length>2) el.value=`(${d.slice(0,2)}) ${d.slice(2)}`;
     else if(d.length>0) el.value=`(${d}`;
     else el.value='';
+}
+// CPF (11 dígitos: 000.000.000-00) ou CNPJ (14 dígitos: 00.000.000/0000-00) — detecta sozinho pelo tamanho
+function maskCpfCnpjInput(el){
+    let d=el.value.replace(/\D/g,'').slice(0,14);
+    if(d.length<=11){
+        el.value=d.replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d{1,2})$/,'$1-$2');
+    } else {
+        el.value=d.replace(/(\d{2})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1/$2').replace(/(\d{4})(\d{1,2})$/,'$1-$2');
+    }
+}
+// Número do cartão: agrupa de 4 em 4 (0000 0000 0000 0000)
+function maskCardNumberInput(el){
+    let d=el.value.replace(/\D/g,'').slice(0,16);
+    el.value=d.replace(/(\d{4})(?=\d)/g,'$1 ');
+}
+// Validade: insere a barra sozinha (MM/AAAA)
+function maskCardValidityInput(el){
+    let d=el.value.replace(/\D/g,'').slice(0,6);
+    el.value = d.length>2 ? `${d.slice(0,2)}/${d.slice(2)}` : d;
 }
 function maskCepInput(el){
     let d=el.value.replace(/\D/g,'').slice(0,8);

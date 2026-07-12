@@ -91,26 +91,33 @@ router.post('/create-subscription', requireAuth, async (req, res) => {
     if (plano === 'anual') subscriptionEndsAt.setFullYear(subscriptionEndsAt.getFullYear() + 1);
     else subscriptionEndsAt.setMonth(subscriptionEndsAt.getMonth() + 1);
 
-    await supabaseAdmin.from('companies').update({
-      plan: plano,
-      subscription_status: 'ativo',
-      subscription_ends_at: subscriptionEndsAt.toISOString(),
-      asaas_subscription_id: subscription.id
-    }).eq('id', company.id);
-
     let pix = null;
-    if (billingType === 'PIX' && subscription.id) {
+    if (billingType === 'PIX') {
+      // Pix não confirma na hora — o acesso só é liberado de verdade quando o webhook
+      // avisar que o pagamento caiu. Aqui só guardamos o ID da assinatura, sem marcar como "ativo".
+      await supabaseAdmin.from('companies').update({
+        plan: plano,
+        asaas_subscription_id: subscription.id
+      }).eq('id', company.id);
+
       // O ID da assinatura não serve pra pegar o QR code — precisamos achar a cobrança (payment)
       // que o Asaas gerou automaticamente a partir dessa assinatura.
-      try {
-        const payment = await findFirstPaymentOfSubscription(subscription.id);
-        if (payment) pix = await getPixQrCode(payment.id);
-      } catch (e) {
-        console.warn('[ZapFrio] Não foi possível gerar o QR code do Pix agora:', e.message);
+      const payment = await findFirstPaymentOfSubscription(subscription.id);
+      if (!payment) {
+        return res.status(500).json({ error: 'Não conseguimos gerar o Pix agora. Tente novamente em instantes.' });
       }
+      pix = await getPixQrCode(payment.id);
+    } else {
+      // Cartão: o Asaas já tenta cobrar na hora da criação — se chegou até aqui sem erro, foi aprovado.
+      await supabaseAdmin.from('companies').update({
+        plan: plano,
+        subscription_status: 'ativo',
+        subscription_ends_at: subscriptionEndsAt.toISOString(),
+        asaas_subscription_id: subscription.id
+      }).eq('id', company.id);
     }
 
-    res.json({ success: true, subscriptionEndsAt: subscriptionEndsAt.toISOString(), pix });
+    res.json({ success: true, subscriptionEndsAt: subscriptionEndsAt.toISOString(), pix, aguardandoPix: billingType==='PIX' });
   } catch (err) {
     console.error('[ZapFrio] Erro ao criar assinatura:', err.details || err.message);
     res.status(500).json({ error: 'Não foi possível concluir a assinatura agora. Tente novamente.' });

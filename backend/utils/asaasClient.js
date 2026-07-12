@@ -52,11 +52,11 @@ function cancelAsaasSubscription(subscriptionId) {
 // de forma meio assíncrona — o ID da assinatura não serve pra buscar o QR code do Pix,
 // precisamos do ID da cobrança. Essa função busca essa cobrança, tentando algumas vezes
 // caso ainda não tenha sido gerada no exato instante em que chamamos.
-async function findFirstPaymentOfSubscription(subscriptionId, tentativas = 5) {
+async function findFirstPaymentOfSubscription(subscriptionId, tentativas = 6) {
   for (let i = 0; i < tentativas; i++) {
-    const result = await asaasRequest(`/payments?subscription=${subscriptionId}`);
+    const result = await asaasRequest(`/subscriptions/${subscriptionId}/payments`);
     if (result.data && result.data.length > 0) return result.data[0];
-    await new Promise(r => setTimeout(r, 800)); // espera um pouquinho e tenta de novo
+    await new Promise(r => setTimeout(r, 1000)); // espera um pouquinho e tenta de novo
   }
   return null;
 }
