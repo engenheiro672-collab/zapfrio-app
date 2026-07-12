@@ -17,8 +17,8 @@
 :root{--bg:#f0f2f8;--bg2:#e8eaf4;--card:rgba(255,255,255,.9);--card-border:rgba(255,255,255,.7);--text:#1e293b;--text2:#64748b;--text3:#94a3b8;--divider:#e2e8f0;--input-bg:#fff;--table-hover:rgba(99,102,241,.04);--chart-grid:rgba(0,0,0,.04);--chart-text:#94a3b8;--grid-bg:rgba(99,102,241,.04);}
 body.dark{--bg:#060a14;--bg2:#0a0f1e;--card:rgba(13,20,40,.85);--card-border:rgba(99,102,241,.18);--text:#e2e8f0;--text2:#94a3b8;--text3:#4a5568;--divider:rgba(255,255,255,.07);--input-bg:rgba(15,23,42,.8);--table-hover:rgba(99,102,241,.08);--chart-grid:rgba(255,255,255,.05);--chart-text:#64748b;--grid-bg:rgba(99,102,241,.07);}
 
-html { overscroll-behavior: none; height:100%; overflow-x:hidden; }
-body { background-color: var(--bg); color: var(--text); background-image:linear-gradient(var(--grid-bg) 1px, transparent 1px),linear-gradient(90deg, var(--grid-bg) 1px, transparent 1px); background-size: 28px 28px; transition: background-color .3s, color .3s; overscroll-behavior: none; min-height:100%; touch-action: pan-x pan-y; overflow-x:hidden; width:100%; }
+html { overscroll-behavior-x: none; min-height:100%; overflow-x:hidden; touch-action: pan-y; }
+body { background-color: var(--bg); color: var(--text); background-image:linear-gradient(var(--grid-bg) 1px, transparent 1px),linear-gradient(90deg, var(--grid-bg) 1px, transparent 1px); background-size: 28px 28px; transition: background-color .3s, color .3s; overscroll-behavior-x: none; min-height:100%; touch-action: pan-y; overflow-x:hidden; width:100%; }
 body.dark input, body.dark select, body.dark textarea { background:var(--input-bg); color:var(--text); border-color:var(--divider); }
 
 .glass { background:var(--card); backdrop-filter:blur(12px); border:1px solid var(--card-border); transition:background .3s,border .3s, transform .2s, box-shadow .2s; }
