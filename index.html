@@ -47,6 +47,10 @@ body.dark input, body.dark select, body.dark textarea { background:var(--input-b
 .spin { animation: spin 1s linear infinite; }
 @keyframes shelby-glow { 0%,100%{box-shadow:0 0 30px rgba(99,102,241,.3)} 50%{box-shadow:0 0 60px rgba(139,92,246,.7)} }
 @keyframes floatSlow { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }
+@keyframes barPulse { 0%,100%{transform:scaleY(.88)} 50%{transform:scaleY(1)} }
+.lp-bar{transform-origin:bottom;animation:barPulse 2.6s ease-in-out infinite;}
+@keyframes cardGlow { 0%,100%{box-shadow:0 0 0 rgba(99,102,241,0)} 50%{box-shadow:0 0 16px rgba(99,102,241,.25)} }
+.lp-card-live{animation:cardGlow 3.5s ease-in-out infinite;}
 @keyframes revealUp { from{opacity:0;transform:translateY(40px)} to{opacity:1;transform:translateY(0)} }
 .reveal{opacity:0;transform:translateY(40px);transition:opacity .7s ease,transform .7s ease;}
 .reveal.in{opacity:1;transform:translateY(0);}
@@ -208,12 +212,12 @@ body.with-trial-banner main{ margin-top:36px; }
                     <div class="lp-card rounded-xl p-3 sm:p-4 min-w-0"><p class="text-[9px] sm:text-[10px] text-slate-500 font-bold uppercase mb-1 truncate">Meta do Mês</p><p class="text-base sm:text-xl font-black text-violet-400 truncate">76%</p></div>
                 </div>
                 <div class="lp-card rounded-xl mt-3 p-4 h-40 flex items-end gap-2">
-                    <div class="flex-1 bg-gradient-to-t from-indigo-600 to-indigo-400/40 rounded-t" style="height:45%"></div>
-                    <div class="flex-1 bg-gradient-to-t from-indigo-600 to-indigo-400/40 rounded-t" style="height:65%"></div>
-                    <div class="flex-1 bg-gradient-to-t from-indigo-600 to-indigo-400/40 rounded-t" style="height:50%"></div>
-                    <div class="flex-1 bg-gradient-to-t from-violet-600 to-violet-400/40 rounded-t" style="height:80%"></div>
-                    <div class="flex-1 bg-gradient-to-t from-violet-600 to-violet-400/40 rounded-t" style="height:95%"></div>
-                    <div class="flex-1 bg-gradient-to-t from-emerald-600 to-emerald-400/40 rounded-t" style="height:70%"></div>
+                    <div class="lp-bar flex-1 bg-gradient-to-t from-indigo-600 to-indigo-400/40 rounded-t" style="height:45%;animation-delay:0s"></div>
+                    <div class="lp-bar flex-1 bg-gradient-to-t from-indigo-600 to-indigo-400/40 rounded-t" style="height:65%;animation-delay:.2s"></div>
+                    <div class="lp-bar flex-1 bg-gradient-to-t from-indigo-600 to-indigo-400/40 rounded-t" style="height:50%;animation-delay:.4s"></div>
+                    <div class="lp-bar flex-1 bg-gradient-to-t from-violet-600 to-violet-400/40 rounded-t" style="height:80%;animation-delay:.6s"></div>
+                    <div class="lp-bar flex-1 bg-gradient-to-t from-violet-600 to-violet-400/40 rounded-t" style="height:95%;animation-delay:.8s"></div>
+                    <div class="lp-bar flex-1 bg-gradient-to-t from-emerald-600 to-emerald-400/40 rounded-t" style="height:70%;animation-delay:1s"></div>
                 </div>
             </div>
         </div>
@@ -248,14 +252,14 @@ body.with-trial-banner main{ margin-top:36px; }
                 </ul>
             </div>
             <div class="reveal order-1 md:order-2">
-                <div class="lp-mock p-4 md:p-5">
+                <div class="lp-mock lp-float p-4 md:p-5" style="animation-delay:.5s">
                     <p class="text-[10px] text-slate-500 font-bold uppercase mb-3">Nova Ordem de Serviço</p>
                     <div class="space-y-2.5">
                         <div class="lp-card rounded-lg p-2.5 flex items-center justify-between text-xs"><span class="text-slate-500">Cliente</span><span class="font-bold text-slate-200">Maria Souza</span></div>
                         <div class="lp-card rounded-lg p-2.5 flex items-center justify-between text-xs"><span class="text-slate-500">Equipamento</span><span class="font-bold text-slate-200">Geladeira · Brastemp</span></div>
                         <div class="lp-card rounded-lg p-2.5 flex items-center justify-between text-xs"><span class="text-slate-500">Defeito</span><span class="font-bold text-slate-200">Não está gelando</span></div>
                         <div class="lp-card rounded-lg p-2.5 flex items-center justify-between text-xs"><span class="text-slate-500">Garantia</span><span class="font-bold text-emerald-400">3 meses</span></div>
-                        <div class="bg-indigo-600 rounded-lg p-2.5 text-center text-xs font-bold text-white mt-3">+ Criar OS</div>
+                        <div class="lp-card-live bg-indigo-600 rounded-lg p-2.5 text-center text-xs font-bold text-white mt-3">+ Criar OS</div>
                     </div>
                 </div>
             </div>
@@ -264,11 +268,11 @@ body.with-trial-banner main{ margin-top:36px; }
         <!-- FINANCEIRO -->
         <div class="grid md:grid-cols-2 gap-10 items-center">
             <div class="reveal">
-                <div class="lp-mock p-4 md:p-5">
+                <div class="lp-mock lp-float p-4 md:p-5" style="animation-delay:1s">
                     <p class="text-[10px] text-slate-500 font-bold uppercase mb-3">Financeiro do mês</p>
                     <div class="grid grid-cols-2 gap-2.5 mb-3">
-                        <div class="lp-card rounded-lg p-3"><p class="text-[9px] text-slate-500 font-bold uppercase mb-1">Entradas</p><p class="text-base font-black text-emerald-400">R$ 9.240</p></div>
-                        <div class="lp-card rounded-lg p-3"><p class="text-[9px] text-slate-500 font-bold uppercase mb-1">Saídas</p><p class="text-base font-black text-red-400">R$ 2.180</p></div>
+                        <div class="lp-card lp-card-live rounded-lg p-3"><p class="text-[9px] text-slate-500 font-bold uppercase mb-1">Entradas</p><p class="text-base font-black text-emerald-400">R$ 9.240</p></div>
+                        <div class="lp-card rounded-lg p-3" style="animation-delay:1.5s"><p class="text-[9px] text-slate-500 font-bold uppercase mb-1">Saídas</p><p class="text-base font-black text-red-400">R$ 2.180</p></div>
                     </div>
                     <div class="space-y-2">
                         <div class="lp-card rounded-lg p-2.5 flex items-center justify-between text-xs"><span class="text-slate-400">Serviço — João Pedro</span><span class="font-bold text-emerald-400">+R$ 450</span></div>
@@ -1162,6 +1166,21 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('current-date').textContent = new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
     if(localStorage.getItem('zapfrio_dark')==='true'){document.body.classList.add('dark');}
     setupRevealAnimations();
+    // Truque pra forçar o Safari a "esquecer" qualquer zoom que tenha ficado grudado de uma visita anterior
+    const vp=document.querySelector('meta[name="viewport"]');
+    if(vp){const original=vp.getAttribute('content');vp.setAttribute('content',original+', maximum-scale=1.0');}
+    // Bloqueio "de verdade" do zoom — impede o próprio gesto de beliscar e o zoom por duplo toque,
+    // não depende só do navegador respeitar o viewport (funciona em qualquer situação, no site inteiro).
+    document.addEventListener('gesturestart', e=>e.preventDefault());
+    document.addEventListener('gesturechange', e=>e.preventDefault());
+    document.addEventListener('gestureend', e=>e.preventDefault());
+    document.addEventListener('touchmove', e=>{ if(e.touches.length>1) e.preventDefault(); }, {passive:false});
+    let lastTouchEnd=0;
+    document.addEventListener('touchend', e=>{
+        const now=Date.now();
+        if(now-lastTouchEnd<=300) e.preventDefault();
+        lastTouchEnd=now;
+    }, false);
     // Acesso direto vindo do Painel Master (admin) — pula landing/login e entra direto no painel do cliente,
     // sem que o cliente seja notificado (no sistema real, isso viria de um token de sessão de impersonação).
     const params=new URLSearchParams(window.location.search);
