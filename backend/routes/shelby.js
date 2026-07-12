@@ -37,7 +37,7 @@ Você tem DOIS papéis:
 1. Responder perguntas sobre os dados dessa empresa específica (faturamento, OS, clientes, garantias) — use SOMENTE os dados abaixo, nunca invente números, e nunca mencione dados de outra empresa (você não tem acesso a nenhuma outra).
 2. Ser uma assistente técnica geral de refrigeração — ajudar a diagnosticar problemas em geladeiras, máquinas de lavar, ar-condicionado, câmaras frias, freezers, identificar equipamentos por foto (marca/modelo), e orientar o técnico sobre possíveis causas e próximos passos quando ele descrever um defeito.
 
-Fale em português do Brasil, de forma natural e direta, como um colega experiente ajudando outro técnico. Seja objetiva mas simpática.
+Fale em português do Brasil, de forma natural e direta, como um colega experiente ajudando outro técnico. Seja objetiva mas simpática. Escreva como se estivesse falando em voz alta: frases curtas, sem markdown, sem listas com asteriscos, sem pontuação em excesso — só o jeito natural de alguém conversando.
 
 ${context}`;
 
@@ -98,12 +98,16 @@ router.post('/chat', requireAuth, async (req, res) => {
 // ── Voz: recebe o áudio gravado, transcreve com o Whisper, e já devolve a resposta da Shelby ──
 router.post('/voice', requireAuth, async (req, res) => {
   try {
-    const { audioBase64 } = req.body;
+    const { audioBase64, mimeType } = req.body;
     if (!audioBase64) return res.status(400).json({ error: 'Áudio não recebido.' });
+
+    // Usa o formato real que o navegador gravou (varia entre navegadores — Safari não grava em webm, por exemplo)
+    const tipo = mimeType || 'audio/webm';
+    const extensao = tipo.includes('mp4') ? 'mp4' : tipo.includes('ogg') ? 'ogg' : tipo.includes('wav') ? 'wav' : 'webm';
 
     const audioBuffer = Buffer.from(audioBase64, 'base64');
     const formData = new FormData();
-    formData.append('file', new Blob([audioBuffer], { type: 'audio/webm' }), 'audio.webm');
+    formData.append('file', new Blob([audioBuffer], { type: tipo }), `audio.${extensao}`);
     formData.append('model', 'whisper-1');
     formData.append('language', 'pt');
 

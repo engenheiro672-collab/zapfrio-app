@@ -84,7 +84,7 @@ body.dark .badge-contato{background:#451a03;color:#fde68a;border-color:#92400e;}
 
 /* ── LOCKED OVERLAY ── */
 .locked-badge{position:absolute;top:8px;right:8px;background:rgba(245,158,11,.15);color:#f59e0b;border:1px solid rgba(245,158,11,.3);font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;display:flex;align-items:center;gap:4px;}
-.shelby-lock-overlay{position:absolute;inset:0;z-index:30;background:rgba(5,9,20,.75);backdrop-filter:blur(6px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;border-radius:24px;gap:14px;padding:20px;}
+.shelby-lock-overlay{position:absolute;inset:0;z-index:30;background:rgba(5,9,20,.94);backdrop-filter:blur(10px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;border-radius:24px;gap:14px;padding:20px;}
 
 /* ── MOBILE SIDEBAR ── */
 @media (max-width:767px){
@@ -683,26 +683,22 @@ body.with-trial-banner main{ margin-top:36px; }
                     <div class="flex items-center gap-2 bg-white/5 px-4 py-2 rounded-xl border border-white/10"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span><span class="text-xs text-slate-300 font-medium">Online</span><span class="text-slate-600 mx-2">|</span><span class="text-xs text-slate-400" id="shelby-period-label">Período: –</span></div>
                 </div>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-5 gap-8">
-                <div class="md:col-span-2 flex flex-col items-center justify-center gap-5">
-                    <button id="shelby-btn" onclick="toggleShelby()" class="shelby-orb w-28 h-28 rounded-full bg-gradient-to-br from-indigo-600 to-violet-700 flex flex-col items-center justify-center gap-2 text-white transition-all duration-300 cursor-pointer border-2 border-indigo-400/30">
-                        <i data-lucide="mic" class="w-8 h-8" id="shelby-icon"></i><span class="text-[10px] font-bold tracking-widest uppercase" id="shelby-btn-label">Falar</span>
-                    </button>
-                    <label class="text-xs text-slate-400 flex items-center gap-2 cursor-pointer hover:text-white transition">
-                        <i data-lucide="camera" class="w-4 h-4"></i> Enviar foto do equipamento
+            <div class="flex flex-col gap-3" style="height:min(640px,70vh)">
+                <div class="flex-1 flex flex-col gap-3 overflow-y-auto pr-1 pb-2" id="shelby-chat">
+                    <div class="flex items-start gap-3"><div class="w-7 h-7 rounded-full bg-indigo-600 flex items-center justify-center shrink-0 mt-0.5"><i data-lucide="sparkles" class="w-3.5 h-3.5 text-white"></i></div><div class="bg-white/5 border border-white/10 rounded-2xl rounded-tl-sm px-4 py-3 text-sm text-slate-300 max-w-sm">Oi! Sou a Shelby, assistente da sua oficina. Pergunte sobre faturamento, clientes ou mande foto de um equipamento. 😊</div></div>
+                </div>
+                <p id="shelby-status" class="text-slate-500 text-xs text-center min-h-[18px]">Toque, digite ou envie uma foto</p>
+                <form onsubmit="return sendShelbyText(event)" class="flex items-center gap-1.5 bg-white/5 border border-white/10 rounded-full px-2 py-1.5 shrink-0">
+                    <label class="p-2.5 rounded-full hover:bg-white/10 transition cursor-pointer text-slate-400 hover:text-white shrink-0">
+                        <i data-lucide="paperclip" class="w-5 h-5"></i>
                         <input type="file" accept="image/*" class="hidden" onchange="handleShelbyPhoto(this)">
                     </label>
-                    <p id="shelby-status" class="text-slate-400 text-sm text-center min-h-[36px]">Toque no orbe, digite ou envie uma foto</p>
-                </div>
-                <div class="md:col-span-3 flex flex-col gap-3">
-                    <div class="flex flex-col gap-3 max-h-[300px] overflow-y-auto pr-1" id="shelby-chat">
-                        <div class="flex items-start gap-3"><div class="w-7 h-7 rounded-full bg-indigo-600 flex items-center justify-center shrink-0 mt-0.5"><i data-lucide="sparkles" class="w-3.5 h-3.5 text-white"></i></div><div class="bg-white/5 border border-white/10 rounded-2xl rounded-tl-sm px-4 py-3 text-sm text-slate-300 max-w-sm">Oi! Sou a Shelby, assistente da sua oficina. Pergunte sobre faturamento, clientes ou mande foto de um equipamento. 😊</div></div>
-                    </div>
-                    <form onsubmit="return sendShelbyText(event)" class="flex items-center gap-2 bg-white/5 border border-white/10 rounded-2xl px-3 py-2 mt-auto">
-                        <input type="text" id="shelby-input" placeholder="Escreva sua pergunta..." class="flex-1 bg-transparent outline-none text-sm text-white placeholder:text-slate-500">
-                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 transition text-white p-2 rounded-xl shrink-0"><i data-lucide="send" class="w-4 h-4"></i></button>
-                    </form>
-                </div>
+                    <input type="text" id="shelby-input" placeholder="Escreva sua pergunta..." class="flex-1 bg-transparent outline-none text-sm text-white placeholder:text-slate-500 min-w-0">
+                    <button type="button" id="shelby-btn" onclick="toggleShelby()" class="p-2.5 rounded-full hover:bg-white/10 transition shrink-0 text-slate-300 hover:text-white">
+                        <i data-lucide="mic" class="w-5 h-5" id="shelby-icon"></i>
+                    </button>
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 transition text-white p-2.5 rounded-full shrink-0"><i data-lucide="send" class="w-4 h-4"></i></button>
+                </form>
             </div>
         </div>
     </div>
@@ -984,12 +980,12 @@ body.with-trial-banner main{ margin-top:36px; }
 </div>
 
 <!-- TELA DE BLOQUEIO TOTAL (trial/assinatura vencidos) -->
-<div id="lock-screen" class="hidden fixed inset-0 bg-slate-950/97 z-[98] flex items-center justify-center p-4 text-center">
+<div id="lock-screen" class="hidden fixed inset-0 z-[98] flex items-center justify-center p-4 text-center" style="background:rgba(2,6,23,0.97) !important;">
     <div class="max-w-sm">
-        <div class="w-16 h-16 bg-red-500/15 rounded-2xl flex items-center justify-center mx-auto mb-5"><i data-lucide="lock" class="w-8 h-8 text-red-400"></i></div>
-        <h2 id="lock-title" class="text-2xl font-black text-white mb-3">Sua assinatura venceu</h2>
-        <p id="lock-message" class="text-slate-400 text-sm mb-7">Renove para continuar usando o ZapFrio.</p>
-        <button onclick="openPlanModal()" class="lp-btn-primary text-white font-bold px-7 py-3.5 rounded-xl transition">Realizar pagamento</button>
+        <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-5" style="background:rgba(239,68,68,.15)"><i data-lucide="lock" class="w-8 h-8" style="color:#f87171"></i></div>
+        <h2 id="lock-title" class="text-2xl font-black mb-3" style="color:#ffffff !important;">Sua assinatura venceu</h2>
+        <p id="lock-message" class="text-sm mb-7" style="color:#cbd5e1 !important;">Renove para continuar usando o ZapFrio.</p>
+        <button onclick="openPlanModal()" class="font-bold px-7 py-3.5 rounded-xl transition" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#ffffff !important;">Realizar pagamento</button>
     </div>
 </div>
 
@@ -2386,12 +2382,28 @@ function restoreShelbyHistory(){
     }catch(err){}
 }
 let shelbyVoiceMode = false;
+let cachedShelbyVoice=null;
+function pickBestPtBrVoice(){
+    if(!window.speechSynthesis) return null;
+    const voices=speechSynthesis.getVoices();
+    if(!voices.length) return null;
+    const ptVoices=voices.filter(v=>v.lang&&v.lang.toLowerCase().startsWith('pt'));
+    // Prioriza vozes de melhor qualidade quando o navegador/aparelho tiver (soam bem menos robóticas)
+    const preferred=ptVoices.find(v=>/google|luciana|natural|enhanced|premium|siri|neural/i.test(v.name))
+        || ptVoices.find(v=>v.lang.toLowerCase()==='pt-br')
+        || ptVoices[0];
+    return preferred||null;
+}
+if(window.speechSynthesis){ speechSynthesis.onvoiceschanged=()=>{cachedShelbyVoice=pickBestPtBrVoice();}; }
 function speakShelby(text){
     if(!shelbyVoiceMode || !window.speechSynthesis) return;
     try{
-        const clean=text.replace(/<[^>]+>/g,'');
+        // Tira formatação que deixa a leitura "engessada" (markdown, pontuação repetida)
+        const clean=text.replace(/<[^>]+>/g,'').replace(/[*_#`]/g,'').replace(/\s{2,}/g,' ').trim();
         const u=new SpeechSynthesisUtterance(clean);
-        u.lang='pt-BR'; u.rate=1;
+        u.lang='pt-BR'; u.rate=1.04; u.pitch=1.03; u.volume=1;
+        const voice=cachedShelbyVoice||pickBestPtBrVoice();
+        if(voice) u.voice=voice;
         speechSynthesis.cancel(); speechSynthesis.speak(u);
     }catch(err){}
 }
@@ -2424,14 +2436,19 @@ async function toggleShelby(){
     }
     try{
         const stream=await navigator.mediaDevices.getUserMedia({audio:true});
-        shelbyMediaRecorder=new MediaRecorder(stream);
+        // Detecta o formato que o navegador realmente suporta — o iPhone/Safari não suporta webm,
+        // por isso o áudio às vezes não era entendido: estávamos sempre rotulando como webm mesmo quando não era.
+        const preferredTypes=['audio/webm','audio/mp4','audio/ogg','audio/wav'];
+        const mimeType=preferredTypes.find(t=>window.MediaRecorder && MediaRecorder.isTypeSupported(t)) || '';
+        shelbyMediaRecorder = mimeType ? new MediaRecorder(stream,{mimeType}) : new MediaRecorder(stream);
+        const actualType = shelbyMediaRecorder.mimeType || mimeType || 'audio/webm';
         shelbyAudioChunks=[];
         shelbyMediaRecorder.ondataavailable=e=>shelbyAudioChunks.push(e.data);
         shelbyMediaRecorder.onstop=async()=>{
             stream.getTracks().forEach(t=>t.stop());
             setShelbyRecordingUI(false);
             document.getElementById('shelby-status').textContent='⚡ Transcrevendo e analisando...';
-            const blob=new Blob(shelbyAudioChunks,{type:'audio/webm'});
+            const blob=new Blob(shelbyAudioChunks,{type:actualType});
             const reader=new FileReader();
             reader.onloadend=async()=>{
                 const base64=reader.result.split(',')[1];
@@ -2441,7 +2458,7 @@ async function toggleShelby(){
                     const resp=await fetch(`${BACKEND_URL}/api/shelby/voice`,{
                         method:'POST',
                         headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},
-                        body:JSON.stringify({audioBase64:base64})
+                        body:JSON.stringify({audioBase64:base64, mimeType:actualType})
                     });
                     const data=await resp.json();
                     if(!resp.ok){
@@ -2470,17 +2487,16 @@ async function toggleShelby(){
 function setShelbyRecordingUI(recording){
     shelbyRecording=recording;
     const icon=document.getElementById('shelby-icon');
-    const label=document.getElementById('shelby-btn-label');
     const status=document.getElementById('shelby-status');
     const btn=document.getElementById('shelby-btn');
     if(recording){
         icon.setAttribute('data-lucide','square');
-        label.textContent='Gravando...';
+        icon.classList.add('text-red-400');
         status.textContent='🔴 Gravando — toque de novo pra enviar';
         btn.classList.add('animate-pulse');
     } else {
         icon.setAttribute('data-lucide','mic');
-        label.textContent='Falar';
+        icon.classList.remove('text-red-400');
         btn.classList.remove('animate-pulse');
     }
     lucide.createIcons();
