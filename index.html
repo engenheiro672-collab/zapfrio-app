@@ -1046,7 +1046,7 @@ body.with-trial-banner main{ margin-top:36px; }
 const SUPABASE_URL = 'https://rmtptqvlpewhrmrxbvyo.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtdHB0cXZscGV3aHJtcnhidnlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM3OTIzMzAsImV4cCI6MjA5OTM2ODMzMH0.pHdYi_tsACEuco4uBxjSCDvsBs25g8rFWyMhvwETNbQ';
 // URL do backend (o servidor Node que cuida do Asaas e da Shelby). Troque pela URL do Render assim que publicar.
-const BACKEND_URL = 'http://localhost:3333';
+const BACKEND_URL = 'https://zapfrio-backend.onrender.com';
 async function getAuthToken(){
     const {data}=await supabaseClient.auth.getSession();
     return data?.session?.access_token || null;
