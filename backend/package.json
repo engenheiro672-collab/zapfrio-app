@@ -1,0 +1,17 @@
+{
+  "name": "zapfrio-backend",
+  "version": "1.0.0",
+  "description": "Backend do ZapFrio — só cuida do que não pode ficar exposto no navegador: Asaas (pagamentos) e OpenAI (Shelby IA).",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "@supabase/supabase-js": "^2.45.0"
+  }
+}
