@@ -83,9 +83,20 @@ ${context}`;
   return reply;
 }
 
+// Só libera a Shelby pra quem é assinante pagante de verdade (mensal/anual) — nem trial de 7 dias conta,
+// porque cada conversa aqui gasta OpenAI de verdade.
+function isRealPayingSubscriber(company){
+  return company.subscription_status === 'ativo'
+    && company.subscription_ends_at
+    && new Date(company.subscription_ends_at).getTime() > Date.now();
+}
+
 // ── Chat por texto (e foto) ──
 router.post('/chat', requireAuth, async (req, res) => {
   try {
+    if (!isRealPayingSubscriber(req.company)) {
+      return res.status(403).json({ error: 'A Shelby é exclusiva de assinantes mensais ou anuais.' });
+    }
     const { message, imageBase64, history } = req.body;
     const reply = await getShelbyReply(req.company, message, imageBase64, history);
     res.json({ reply });
@@ -98,6 +109,9 @@ router.post('/chat', requireAuth, async (req, res) => {
 // ── Voz: recebe o áudio gravado, transcreve com o Whisper, e já devolve a resposta da Shelby ──
 router.post('/voice', requireAuth, async (req, res) => {
   try {
+    if (!isRealPayingSubscriber(req.company)) {
+      return res.status(403).json({ error: 'A Shelby é exclusiva de assinantes mensais ou anuais.' });
+    }
     const { audioBase64, mimeType } = req.body;
     if (!audioBase64) return res.status(400).json({ error: 'Áudio não recebido.' });
 

@@ -1487,6 +1487,12 @@ function isAppUnlocked(){
     if(currentCompany.subscription_status==='ativo' && currentCompany.subscription_ends_at && new Date(currentCompany.subscription_ends_at).getTime()>Date.now()) return true;
     return false;
 }
+// Mais rigoroso que isAppUnlocked(): só considera quem é assinante pagante de verdade (mensal/anual).
+// Quem está no trial de 7 dias grátis NÃO conta aqui — usado pra travar a Shelby (custa API de verdade).
+function isRealPayingSubscriber(){
+    if(!currentCompany) return false;
+    return currentCompany.subscription_status==='ativo' && currentCompany.subscription_ends_at && new Date(currentCompany.subscription_ends_at).getTime()>Date.now();
+}
 
 // ── PAYWALL ──
 // force=true → recurso sempre bloqueado antes da assinatura (ex: Shelby IA, custa API de verdade).
@@ -2582,10 +2588,9 @@ function switchTab(id){
     if(id==='garantias')renderGarantias();
     if(id==='clientes')renderClientes();
     if(id==='shelby'){updateShelbyPeriodLabel();const ov=document.getElementById('shelby-overlay');
-        // FASE DE TESTES: a Shelby também libera durante a janela de cortesia (30 min), pra você conseguir validar.
-        // Quando terminar de validar, troca essa linha de volta pra: ov.classList.toggle('hidden', isAppUnlocked());
-        // — assim ela volta a ficar sempre travada até assinar de verdade (já que cada conversa custa API de verdade).
-        if(ov)ov.classList.toggle('hidden', isAppUnlocked() || inFreeWindow());
+        // A Shelby só libera pra quem é assinante pagante de verdade (mensal ou anual) — nem durante
+        // o trial de 7 dias, nem durante a janela de cortesia, já que cada conversa custa API de verdade.
+        if(ov)ov.classList.toggle('hidden', isRealPayingSubscriber());
     }
     if(id==='conversoes')renderConversoesGate();
     closeSidebarMobile();
