@@ -971,18 +971,47 @@ body.with-trial-banner main{ margin-top:36px; }
             </div>
 
             <div id="plan-pix-fields" class="hidden text-center">
-                <p class="text-xs font-bold text-slate-500 uppercase mb-3">Pague com Pix</p>
-                <img id="pix-qr" class="mx-auto rounded-xl border mb-3" width="170" height="170" alt="QR Code Pix">
-                <div class="flex gap-2">
-                    <input type="text" id="pix-code" readonly class="border p-2.5 rounded-xl text-xs flex-1 font-mono">
-                    <button type="button" onclick="copyPixCode()" class="bg-slate-800 text-white px-4 rounded-xl text-xs font-bold shrink-0">Copiar</button>
+                <div id="pix-before-confirm" class="py-4">
+                    <i data-lucide="qr-code" class="w-8 h-8 mx-auto text-slate-400 mb-2"></i>
+                    <p class="text-xs text-slate-500">Preencha seus dados acima e clique em <strong>"Confirmar e gerar Pix"</strong> pra gerar o QR Code.</p>
                 </div>
-                <p class="text-[10px] text-slate-400 mt-2">Assim que o pagamento cair, seu acesso é liberado automaticamente.</p>
+                <div id="pix-after-confirm" class="hidden">
+                    <p class="text-xs font-bold text-slate-500 uppercase mb-3">Pague com Pix</p>
+                    <img id="pix-qr" class="mx-auto rounded-xl border mb-3" width="170" height="170" alt="QR Code Pix">
+                    <div class="flex gap-2 mb-3">
+                        <input type="text" id="pix-code" readonly class="border p-2.5 rounded-xl text-xs flex-1 font-mono">
+                        <button type="button" onclick="copyPixCode()" class="bg-slate-800 text-white px-4 rounded-xl text-xs font-bold shrink-0">Copiar</button>
+                    </div>
+                    <button type="button" onclick="checkPixPayment()" id="pix-check-btn" class="w-full border-2 border-emerald-500 text-emerald-600 font-bold py-2.5 rounded-xl text-sm mb-2 flex items-center justify-center gap-2"><i data-lucide="check" class="w-4 h-4"></i> Já fiz o pagamento</button>
+                    <p class="text-[10px] text-slate-400">Assim que o pagamento cair, seu acesso é liberado automaticamente.</p>
+                </div>
             </div>
 
-            <button onclick="confirmSubscription()" class="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl hover:bg-emerald-700 transition text-sm mt-4">Confirmar e liberar acesso</button>
+            <button onclick="confirmSubscription()" id="plan-confirm-btn" class="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl hover:bg-emerald-700 transition text-sm mt-4">Confirmar e liberar acesso</button>
             <p class="text-[10px] text-slate-400 text-center mt-2">Pagamento processado com segurança pelo Asaas.</p>
         </div>
+    </div>
+</div>
+
+<!-- TELA DE PROCESSAMENTO DE PAGAMENTO — carregando / sucesso com confete / erro -->
+<div id="payment-overlay" class="hidden fixed inset-0 z-[100] flex flex-col items-center justify-center gap-4 p-6 text-center" style="background:rgba(5,9,20,.97);">
+    <div id="payment-state-loading">
+        <div class="relative w-16 h-16 mx-auto mb-4">
+            <div class="absolute inset-0 rounded-full border-4 border-indigo-500/20"></div>
+            <div class="absolute inset-0 rounded-full border-4 border-transparent border-t-indigo-500 animate-spin"></div>
+        </div>
+        <p class="text-white font-bold text-sm">Processando pagamento...</p>
+    </div>
+    <div id="payment-state-success" class="hidden">
+        <div class="w-16 h-16 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto mb-4"><i data-lucide="check-circle" class="w-9 h-9 text-emerald-400"></i></div>
+        <p class="text-white font-black text-lg">Assinatura confirmada! 🎉</p>
+        <p class="text-slate-400 text-sm mt-1">Liberando seu acesso...</p>
+    </div>
+    <div id="payment-state-error" class="hidden max-w-xs">
+        <div class="w-16 h-16 rounded-full bg-red-500/20 flex items-center justify-center mx-auto mb-4"><i data-lucide="x-circle" class="w-9 h-9 text-red-400"></i></div>
+        <p class="text-white font-black text-base mb-2">Pagamento não aprovado</p>
+        <p class="text-slate-400 text-sm mb-5" id="payment-error-text">Não foi possível processar o pagamento agora.</p>
+        <button onclick="document.getElementById('payment-overlay').classList.add('hidden')" class="bg-white text-slate-900 font-bold px-6 py-2.5 rounded-xl text-sm">Tentar novamente</button>
     </div>
 </div>
 
@@ -1525,7 +1554,10 @@ function setPaymentMethod(m){
     document.getElementById('pm-pix-btn').classList.toggle('active-pm', m==='pix');
     document.getElementById('plan-card-fields').classList.toggle('hidden', m!=='cartao');
     document.getElementById('plan-pix-fields').classList.toggle('hidden', m!=='pix');
-    if(m==='pix') generatePixCode();
+    document.getElementById('pix-before-confirm').classList.remove('hidden');
+    document.getElementById('pix-after-confirm').classList.add('hidden');
+    document.getElementById('plan-confirm-btn').textContent = m==='pix' ? 'Confirmar e gerar Pix' : 'Confirmar e liberar acesso';
+    if(pixPollInterval){clearInterval(pixPollInterval);pixPollInterval=null;}
 }
 function generatePixCode(){
     // O código Pix de verdade só existe depois que a assinatura é criada no Asaas —
@@ -1539,6 +1571,49 @@ function copyPixCode(){
     el.select(); el.setSelectionRange(0,99999);
     try{document.execCommand('copy');}catch(err){}
     showToast('Código Pix copiado!');
+}
+let pixPollInterval=null;
+function showPaymentOverlay(state){
+    document.getElementById('payment-overlay').classList.remove('hidden');
+    document.getElementById('payment-state-loading').classList.toggle('hidden', state!=='loading');
+    document.getElementById('payment-state-success').classList.toggle('hidden', state!=='success');
+    document.getElementById('payment-state-error').classList.toggle('hidden', state!=='error');
+    lucide.createIcons();
+}
+function hidePaymentOverlay(){ document.getElementById('payment-overlay').classList.add('hidden'); }
+function launchConfetti(){
+    const cores=['#6366f1','#8b5cf6','#34d399','#f59e0b','#ec4899'];
+    for(let i=0;i<40;i++){
+        const el=document.createElement('div');
+        const cor=cores[Math.floor(Math.random()*cores.length)];
+        const tamanho=6+Math.random()*6;
+        el.style.cssText=`position:fixed;left:${Math.random()*100}vw;top:-20px;width:${tamanho}px;height:${tamanho}px;background:${cor};z-index:110;border-radius:${Math.random()>0.5?'50%':'2px'};pointer-events:none;opacity:.9;`;
+        document.body.appendChild(el);
+        const duracao=1800+Math.random()*1400;
+        const deslocX=(Math.random()-0.5)*200;
+        el.animate([
+            {transform:'translate(0,0) rotate(0deg)',opacity:1},
+            {transform:`translate(${deslocX}px, 100vh) rotate(${Math.random()*720}deg)`,opacity:0.3}
+        ],{duration:duracao,easing:'cubic-bezier(.25,.46,.45,.94)'});
+        setTimeout(()=>el.remove(),duracao+100);
+    }
+}
+function finishSubscriptionSuccess(plan, extra){
+    currentCompany.plan=plan;
+    currentCompany.subscription_status=plan==='trial'?'trial':'ativo';
+    if(extra&&extra.trialEndsAt) currentCompany.trial_ends_at=extra.trialEndsAt;
+    if(extra&&extra.subscriptionEndsAt) currentCompany.subscription_ends_at=extra.subscriptionEndsAt;
+    showPaymentOverlay('success');
+    launchConfetti();
+    setTimeout(()=>{
+        hidePaymentOverlay();
+        closeModal('modal-plan');
+        hideLockScreen();
+        document.querySelectorAll('.locked-badge').forEach(b=>b.classList.add('hidden'));
+        const ov=document.getElementById('shelby-overlay');if(ov)ov.classList.add('hidden');
+        if(pendingGateAction){const fn=pendingGateAction;pendingGateAction=null;fn();}
+        updateTrialBanner();
+    },1800);
 }
 async function confirmSubscription(){
     const nome=document.getElementById('plan-nome').value.trim();
@@ -1564,8 +1639,7 @@ async function confirmSubscription(){
     const token=await getAuthToken();
     if(!token){showToast('Sua sessão expirou. Faça login de novo.','error');return;}
 
-    const btnText='Confirmando...';
-    showToast('Processando pagamento...','warning');
+    showPaymentOverlay('loading');
 
     try{
         let resp, url, body;
@@ -1580,32 +1654,41 @@ async function confirmSubscription(){
         const data=await resp.json();
         if(!resp.ok){
             console.warn('[ZapFrio] Erro ao confirmar assinatura:',data);
-            showToast(data.error||'Não foi possível concluir agora. Tente novamente.','error');
+            document.getElementById('payment-error-text').textContent=data.error||'Não foi possível processar o pagamento agora. Confira os dados e tente de novo.';
+            showPaymentOverlay('error');
             return;
         }
         if(isPix && data.pix){
+            hidePaymentOverlay();
             document.getElementById('pix-code').value=data.pix.payload||'';
             document.getElementById('pix-qr').src=data.pix.encodedImage?`data:image/png;base64,${data.pix.encodedImage}`:'';
+            document.getElementById('pix-before-confirm').classList.add('hidden');
+            document.getElementById('pix-after-confirm').classList.remove('hidden');
             showToast('Pix gerado! Escaneie o QR code ou copie o código pra pagar.');
-            return; // aguarda o pagamento via Pix — o acesso libera sozinho quando o webhook confirmar
+            // Fica de olho sozinho a cada 10s pra ver se o pagamento já caiu, sem precisar clicar em nada
+            if(pixPollInterval)clearInterval(pixPollInterval);
+            pixPollInterval=setInterval(()=>checkPixPayment(true), 10000);
+            return;
         }
 
-        // Atualiza os dados locais da empresa com o que voltou do backend
-        currentCompany.plan=plan;
-        currentCompany.subscription_status=plan==='trial'?'trial':'ativo';
-        if(data.trialEndsAt) currentCompany.trial_ends_at=data.trialEndsAt;
-        if(data.subscriptionEndsAt) currentCompany.subscription_ends_at=data.subscriptionEndsAt;
-
-        closeModal('modal-plan');
-        hideLockScreen();
-        document.querySelectorAll('.locked-badge').forEach(b=>b.classList.add('hidden'));
-        const ov=document.getElementById('shelby-overlay');if(ov)ov.classList.add('hidden');
-        showToast(plan==='trial'?'✅ Teste grátis de 7 dias ativado!':'✅ Assinatura confirmada! Acesso liberado.');
-        if(pendingGateAction){const fn=pendingGateAction;pendingGateAction=null;fn();}
-        updateTrialBanner();
+        finishSubscriptionSuccess(plan, data);
     }catch(err){
         console.warn('[ZapFrio] Erro de rede ao confirmar assinatura:',err);
-        showToast('Sem conexão com o servidor agora. Tente novamente em instantes.','error');
+        document.getElementById('payment-error-text').textContent='Sem conexão com o servidor agora. Tente novamente em instantes.';
+        showPaymentOverlay('error');
+    }
+}
+// Confere se o Pix já caiu. silencioso=true → checagem automática de fundo (não mostra nada se ainda não caiu)
+async function checkPixPayment(silencioso){
+    if(!silencioso) showToast('Verificando pagamento...','warning');
+    const {data,error}=await supabaseClient.from('companies').select('subscription_status,plan,subscription_ends_at').eq('id',currentCompany.id).single();
+    if(error){console.warn('[ZapFrio] Erro ao checar pagamento:',error);return;}
+    if(data.subscription_status==='ativo'){
+        if(pixPollInterval){clearInterval(pixPollInterval);pixPollInterval=null;}
+        currentCompany.subscription_ends_at=data.subscription_ends_at;
+        finishSubscriptionSuccess(data.plan);
+    } else if(!silencioso){
+        showToast('Ainda não identificamos o pagamento. Pode levar de 10 a 15 minutinhos pra confirmar — tenta de novo daqui a pouco.','warning');
     }
 }
 
@@ -2306,7 +2389,10 @@ async function saveIncome(e){
     await loadData();
 }
 function openExpenseModal(){document.getElementById('form-expense').reset();document.getElementById('exp-value').dataset.rawValue='0';document.getElementById('exp-date').valueAsDate=new Date();document.getElementById('modal-expense').classList.remove('hidden');}
-function closeModal(id){document.getElementById(id).classList.add('hidden');}
+function closeModal(id){
+    document.getElementById(id).classList.add('hidden');
+    if(id==='modal-plan' && pixPollInterval){clearInterval(pixPollInterval);pixPollInterval=null;}
+}
 
 async function lookupProtocol(){
     const protocol=document.getElementById('svc-protocol').value.trim().toUpperCase();
