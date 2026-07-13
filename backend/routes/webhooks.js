@@ -58,16 +58,18 @@ router.post('/asaas', express.json(), async (req, res) => {
       }]);
     }
 
-    if (event === 'PAYMENT_OVERDUE') {
+    if (event === 'PAYMENT_OVERDUE' || event === 'PAYMENT_CREDIT_CARD_CAPTURE_REFUSED') {
       const wasTrial = company.subscription_status === 'trial';
       await supabaseAdmin.from('companies').update({
-        subscription_status: wasTrial ? 'vencido' : 'vencido'
+        subscription_status: 'vencido'
       }).eq('id', company.id);
 
       await supabaseAdmin.from('admin_notifications').insert([{
         company_id: company.id,
         type: wasTrial ? 'payment_failed_trial' : 'payment_failed_sub',
-        message: `${company.name}: a cobrança não foi paga e ${wasTrial ? 'o teste grátis acabou' : 'a assinatura venceu'}. Entre em contato.`,
+        message: event === 'PAYMENT_CREDIT_CARD_CAPTURE_REFUSED'
+          ? `${company.name}: o cartão foi recusado. ${wasTrial ? 'O teste grátis vai acabar' : 'A assinatura vai vencer'} se não regularizar.`
+          : `${company.name}: a cobrança não foi paga e ${wasTrial ? 'o teste grátis acabou' : 'a assinatura venceu'}. Entre em contato.`,
         contact: company.phone,
         needs_action: true
       }]);
