@@ -142,9 +142,8 @@ body.dark .badge-contato{background:#451a03;color:#fde68a;border-color:#92400e;}
 
 /* ── TRIAL BANNER ── */
 #trial-banner{color:white;font-weight:700;font-size:12px;padding:8px 16px;text-align:center;transition:background .4s;}
-body.with-trial-banner #sidebar{ top:36px; height:calc(100% - 36px); }
-body.with-trial-banner main{ margin-top:36px; }
-@media (max-width:767px){ body.with-trial-banner #sidebar{ top:0; } }
+body.with-trial-banner #sidebar{ top:var(--banner-h,36px); height:calc(100% - var(--banner-h,36px)); }
+body.with-trial-banner main{ margin-top:var(--banner-h,36px); }
 
 @media print{ body * { visibility:hidden; } #print-area, #print-area * { visibility:visible; } #print-area { position:fixed; left:0; top:0; width:100%; height:100%; margin:0; padding-top:10mm; display:flex; flex-direction:column; align-items:center; background:white; z-index:9999; } .no-print { display:none !important; } @page { margin:0; size:auto; } }
 /* Evita o zoom automático do Safari/iOS ao tocar em campos de formulário no celular
@@ -1721,6 +1720,10 @@ function updateTrialBanner(){
         document.body.classList.add('with-trial-banner');
         banner.style.background = daysLeft<=1?'linear-gradient(90deg,#dc2626,#ef4444)':daysLeft<=3?'linear-gradient(90deg,#d97706,#f59e0b)':'linear-gradient(90deg,#4f46e5,#7c3aed)';
         document.getElementById('trial-banner-text').textContent = daysLeft<=0?'Último dia do seu teste grátis! Clique para assinar':`🎁 Teste grátis — faltam ${daysLeft} dia${daysLeft===1?'':'s'} · clique para ver planos`;
+        // Mede a altura real do aviso (pode ser 1 ou 2 linhas, dependendo da tela) e ajusta o menu/conteúdo certinho
+        requestAnimationFrame(()=>{
+            document.documentElement.style.setProperty('--banner-h', banner.offsetHeight+'px');
+        });
     } else {
         banner.classList.add('hidden');
         document.body.classList.remove('with-trial-banner');
@@ -2728,6 +2731,10 @@ function fitPreviewToScreen(){
 // Recalcula o tamanho se a pessoa girar o celular ou redimensionar a janela enquanto o documento está aberto
 window.addEventListener('resize', ()=>{
     if(!document.getElementById('modal-preview').classList.contains('hidden')) fitPreviewToScreen();
+    const banner=document.getElementById('trial-banner');
+    if(banner && !banner.classList.contains('hidden')){
+        document.documentElement.style.setProperty('--banner-h', banner.offsetHeight+'px');
+    }
 });
 function actualPrint(){document.getElementById('print-area').innerHTML=document.getElementById('preview-content').innerHTML;window.print();}
 </script>
