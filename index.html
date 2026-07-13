@@ -1500,7 +1500,9 @@ function gate(fn, force){
 function openPlanModal(){
     document.getElementById('modal-plan').classList.remove('hidden');
     document.getElementById('plan-payment-form').classList.add('hidden');
-    document.getElementById('plan-trial-card').classList.toggle('hidden', currentCompany && currentCompany.plan!=='trial' && !!currentCompany.trial_ends_at);
+    // Esconde a opção de trial pra sempre se ele já foi ativado alguma vez (trial_ends_at preenchido) —
+    // não importa o status atual (mesmo se venceu sem pagar, o plano no banco continua "trial" até virar pagante de verdade).
+    document.getElementById('plan-trial-card').classList.toggle('hidden', !!(currentCompany && currentCompany.trial_ends_at));
     lucide.createIcons();
 }
 function selectPlan(type){

@@ -31,6 +31,10 @@ router.post('/create-trial', requireAuth, async (req, res) => {
     const { nomeCompleto, cpfCnpj, creditCard, creditCardHolderInfo } = req.body;
     const company = req.company;
 
+    if (company.trial_ends_at) {
+      return res.status(400).json({ error: 'Essa empresa já usou o teste grátis antes. Escolha o plano mensal ou anual.' });
+    }
+
     const customerId = await ensureAsaasCustomer(company, { nome: nomeCompleto, cpfCnpj });
 
     const subscription = await createAsaasSubscription({
