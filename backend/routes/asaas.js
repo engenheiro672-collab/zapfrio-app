@@ -11,8 +11,8 @@ function addDays(date, days) {
 }
 
 // Garante que a empresa já tem um cliente criado no Asaas (cria na primeira vez, reaproveita depois)
-async function ensureAsaasCustomer(company, { nome, cpfCnpj }) {
-  if (company.asaas_customer_id) return company.asaas_customer_id;
+async function ensureAsaasCustomer(company, { nome, cpfCnpj }, forceNew) {
+  if (company.asaas_customer_id && !forceNew) return company.asaas_customer_id;
 
   const customer = await createAsaasCustomer({
     name: nome || company.name,
@@ -22,7 +22,25 @@ async function ensureAsaasCustomer(company, { nome, cpfCnpj }) {
   });
 
   await supabaseAdmin.from('companies').update({ asaas_customer_id: customer.id }).eq('id', company.id);
+  company.asaas_customer_id = customer.id;
   return customer.id;
+}
+
+// Cria a assinatura no Asaas — se o customerId salvo for de outro ambiente (ex: sobrou do sandbox
+// depois de trocar pra produção), o Asaas recusa com "invalid_customer". Aqui a gente detecta isso,
+// esquece o ID antigo, cria um cliente novo automaticamente e tenta de novo, sem precisar mexer no banco na mão.
+async function createSubscriptionWithRetry(company, params, dadosCliente) {
+  try {
+    return await createAsaasSubscription(params);
+  } catch (err) {
+    const codigo = err.details?.errors?.[0]?.code;
+    if (codigo === 'invalid_customer') {
+      console.warn('[ZapFrio] customer_id inválido (provavelmente de outro ambiente) — recriando cliente no Asaas...');
+      const novoCustomerId = await ensureAsaasCustomer(company, dadosCliente, true);
+      return await createAsaasSubscription({ ...params, customerId: novoCustomerId });
+    }
+    throw err;
+  }
 }
 
 // ── Ativar teste grátis de 7 dias (precisa de cartão salvo, cobrança só depois de 7 dias) ──
@@ -37,7 +55,7 @@ router.post('/create-trial', requireAuth, async (req, res) => {
 
     const customerId = await ensureAsaasCustomer(company, { nome: nomeCompleto, cpfCnpj });
 
-    const subscription = await createAsaasSubscription({
+    const subscription = await createSubscriptionWithRetry(company, {
       customerId,
       value: 197,
       cycle: 'MONTHLY',
@@ -46,7 +64,7 @@ router.post('/create-trial', requireAuth, async (req, res) => {
       description: 'ZapFrio — Plano Mensal (após teste grátis)',
       creditCard,
       creditCardHolderInfo
-    });
+    }, { nome: nomeCompleto, cpfCnpj });
 
     const trialEndsAt = new Date();
     trialEndsAt.setDate(trialEndsAt.getDate() + 7);
@@ -80,7 +98,7 @@ router.post('/create-subscription', requireAuth, async (req, res) => {
     const cycle = plano === 'anual' ? 'YEARLY' : 'MONTHLY';
     const billingType = metodoPagamento === 'pix' ? 'PIX' : 'CREDIT_CARD';
 
-    const subscription = await createAsaasSubscription({
+    const subscription = await createSubscriptionWithRetry(company, {
       customerId,
       value,
       cycle,
@@ -89,7 +107,7 @@ router.post('/create-subscription', requireAuth, async (req, res) => {
       description: `ZapFrio — Plano ${plano === 'anual' ? 'Anual' : 'Mensal'}`,
       creditCard,
       creditCardHolderInfo
-    });
+    }, { nome: nomeCompleto, cpfCnpj });
 
     const subscriptionEndsAt = new Date();
     if (plano === 'anual') subscriptionEndsAt.setFullYear(subscriptionEndsAt.getFullYear() + 1);
